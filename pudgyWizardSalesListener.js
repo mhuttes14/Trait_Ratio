@@ -4,7 +4,7 @@ const WebSocket = require('ws');
 
 // Initialize the OpenSea Stream Client
 const client = new OpenSeaStreamClient({
-  token: 'YOUR_OPENSEA_API_KEY',  // Replace with your OpenSea API key
+  token: '6615653c4b604ce4a223e262fa0d1987',  // Replace with your OpenSea API key
   connectOptions: {
     transport: WebSocket
   }
