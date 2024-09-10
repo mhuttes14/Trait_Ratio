@@ -13,21 +13,13 @@ async function initializeOpenSeaClient() {
       }
     });
 
-    // Log all events from the WebSocket (not just sales)
-    client.onAnyEvent({
-      collection_slug: 'lilpudgys',  // Updated collection slug for Lil Pudgys
-      event: (event) => {
-        console.log('🔍 Incoming Event:', JSON.stringify(event, null, 2));
-      }
-    });
-
-    // Specific listener for "item_sold" events in the Lil Pudgys collection
+    // Listen for "item_sold" events for the Lil Pudgys collection
     client.onItemSold({
-      collection_slug: 'lilpudgys',
+      collection_slug: 'lilpudgys',  // Correct collection slug for Lil Pudgys
       event: (event) => {
         const { payload } = event;
 
-        // Log the full payload for inspection
+        // Log the full event payload for inspection
         console.log('🔍 Full Event Payload:', JSON.stringify(event, null, 2));
 
         // Log the sale details if payload exists
