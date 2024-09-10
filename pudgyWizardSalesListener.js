@@ -8,7 +8,7 @@ async function initializeOpenSeaClient() {
 
     // OpenSea Stream Client setup
     const client = new OpenSeaStreamClient({
-      token: 'YOUR_OPENSEA_API_KEY',  // Replace with your actual OpenSea API key
+      token: 'a0ebd2016e774dcb8214cae098636155',  // Replace with your actual OpenSea API key
       connectOptions: {
         transport: WebSocket
       }
@@ -16,7 +16,7 @@ async function initializeOpenSeaClient() {
 
     // Listen for "item_sold" events for Lil Pudgys collection
     client.onItemSold({
-      collection_slug: 'lilpudgys',  // Slug for Lil Pudgys
+      collection_slug: 'lilpudgys',  // Correct collection slug for Lil Pudgys
       event: (event) => {
         console.log('🔍 Sale Event Payload:', JSON.stringify(event, null, 2));
 
@@ -33,9 +33,9 @@ async function initializeOpenSeaClient() {
       }
     });
 
-    // You can listen to multiple events, e.g., item transferred
+    // Listen to multiple event types (e.g., sales and transfers)
     client.onEvents('lilpudgys', [EventType.ITEM_SOLD, EventType.ITEM_TRANSFERRED], (event) => {
-      console.log('🔍 Another Event:', event);
+      console.log('🔍 Another Event:', JSON.stringify(event, null, 2));
     });
 
     console.log("✅ Connected to OpenSea WebSocket successfully!");
