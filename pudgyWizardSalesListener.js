@@ -34,8 +34,8 @@ function initializeOpenSeaClient() {
     }
   });
 
-  // Handle WebSocket errors
-  client.on('error', (err) => {
+  // Handle WebSocket errors and automatic reconnection
+  client.ws.on('error', (err) => {
     console.error("[ERROR]:", err.message || err);
     if (reconnectAttempts < maxReconnectAttempts) {
       reconnectAttempts++;
@@ -47,7 +47,7 @@ function initializeOpenSeaClient() {
   });
 
   // Reset reconnect attempts on successful connection
-  client.on('open', () => {
+  client.ws.on('open', () => {
     reconnectAttempts = 0;
     console.log("✅ Connected to OpenSea WebSocket successfully!");
   });
