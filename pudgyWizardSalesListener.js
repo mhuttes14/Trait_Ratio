@@ -1,4 +1,4 @@
-const { OpenSeaStreamClient } = require('@opensea/stream-js');
+const { OpenSeaStreamClient, EventType } = require('@opensea/stream-js');
 const WebSocket = require('ws');
 
 // Initialize the OpenSea Stream Client
@@ -6,23 +6,21 @@ async function initializeOpenSeaClient() {
   try {
     console.log("🔌 Attempting to connect to OpenSea WebSocket...");
 
+    // OpenSea Stream Client setup
     const client = new OpenSeaStreamClient({
-      token: 'a0ebd2016e774dcb8214cae098636155',  // Your OpenSea API key
+      token: 'a0ebd2016e774dcb8214cae098636155',  // Replace with your actual OpenSea API key
       connectOptions: {
         transport: WebSocket
       }
     });
 
-    // Listen for "item_sold" events for the Lil Pudgys collection
+    // Listen for "item_sold" events for Lil Pudgys collection
     client.onItemSold({
-      collection_slug: 'lilpudgys',  // Correct collection slug for Lil Pudgys
+      collection_slug: 'lilpudgys',  // Slug for Lil Pudgys
       event: (event) => {
+        console.log('🔍 Sale Event Payload:', JSON.stringify(event, null, 2));
+
         const { payload } = event;
-
-        // Log the full event payload for inspection
-        console.log('🔍 Full Event Payload:', JSON.stringify(event, null, 2));
-
-        // Log the sale details if payload exists
         if (payload && payload.asset) {
           console.log(`🎉 Lil Pudgy sold!`);
           console.log(`Token ID: ${payload.asset.token_id}`);
@@ -33,6 +31,11 @@ async function initializeOpenSeaClient() {
           console.log('⚠️ No asset data found in the event payload.');
         }
       }
+    });
+
+    // You can listen to multiple events, e.g., item transferred
+    client.onEvents('lilpudgys', [EventType.ITEM_SOLD, EventType.ITEM_TRANSFERRED], (event) => {
+      console.log('🔍 Another Event:', event);
     });
 
     console.log("✅ Connected to OpenSea WebSocket successfully!");
