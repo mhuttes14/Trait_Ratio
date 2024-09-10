@@ -13,9 +13,17 @@ async function initializeOpenSeaClient() {
       }
     });
 
-    // Listen for "item_sold" events for the Lil Pudgys collection
-    client.onItemSold({
+    // Log all events from the WebSocket (not just sales)
+    client.onAnyEvent({
       collection_slug: 'lilpudgys',  // Updated collection slug for Lil Pudgys
+      event: (event) => {
+        console.log('🔍 Incoming Event:', JSON.stringify(event, null, 2));
+      }
+    });
+
+    // Specific listener for "item_sold" events in the Lil Pudgys collection
+    client.onItemSold({
+      collection_slug: 'lilpudgys',
       event: (event) => {
         const { payload } = event;
 
