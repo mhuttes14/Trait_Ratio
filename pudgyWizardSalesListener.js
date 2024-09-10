@@ -1,11 +1,7 @@
 const { OpenSeaStreamClient } = require('@opensea/stream-js');
 const WebSocket = require('ws');
 
-let reconnectAttempts = 0;
-const maxReconnectAttempts = 10;
-const reconnectDelay = 5000;  // Wait 5 seconds before attempting to reconnect
-
-// Function to initialize the OpenSea WebSocket connection
+// Initialize the OpenSea Stream Client
 async function initializeOpenSeaClient() {
   try {
     console.log("🔌 Attempting to connect to OpenSea WebSocket...");
@@ -17,21 +13,25 @@ async function initializeOpenSeaClient() {
       }
     });
 
-    // Listen for "item_sold" events for the Pudgy Penguins collection
+    // Listen for "item_sold" events for the Lil Pudgys collection
     client.onItemSold({
-      collection_slug: 'pudgy-penguins',
+      collection_slug: 'lilpudgys',  // Updated collection slug for Lil Pudgys
       event: (event) => {
         const { payload } = event;
 
         // Log the full payload for inspection
-        console.log('Event Payload:', JSON.stringify(payload, null, 2));
+        console.log('🔍 Full Event Payload:', JSON.stringify(event, null, 2));
 
-        // Log the sale details
-        console.log(`🎉 Pudgy Penguin sold!`);
-        console.log(`Token ID: ${payload.asset.token_id}`);
-        console.log(`Sale Price: ${payload.payment_token.eth_price} ETH`);
-        console.log(`Buyer: ${payload.winner_account.address}`);
-        console.log(`Seller: ${payload.seller.address}`);
+        // Log the sale details if payload exists
+        if (payload && payload.asset) {
+          console.log(`🎉 Lil Pudgy sold!`);
+          console.log(`Token ID: ${payload.asset.token_id}`);
+          console.log(`Sale Price: ${payload.payment_token.eth_price} ETH`);
+          console.log(`Buyer: ${payload.winner_account.address}`);
+          console.log(`Seller: ${payload.seller.address}`);
+        } else {
+          console.log('⚠️ No asset data found in the event payload.');
+        }
       }
     });
 
@@ -39,14 +39,6 @@ async function initializeOpenSeaClient() {
 
   } catch (error) {
     console.error("[ERROR]:", error.message || error);
-
-    if (reconnectAttempts < maxReconnectAttempts) {
-      reconnectAttempts++;
-      console.log(`⚠️ Connection lost. Attempting to reconnect... (${reconnectAttempts}/${maxReconnectAttempts})`);
-      setTimeout(initializeOpenSeaClient, reconnectDelay);  // Attempt to reconnect after a delay
-    } else {
-      console.log("❌ Max reconnection attempts reached. Exiting...");
-    }
   }
 }
 
