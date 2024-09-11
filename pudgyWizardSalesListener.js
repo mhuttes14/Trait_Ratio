@@ -6,9 +6,8 @@ async function initializeOpenSeaClient() {
   try {
     console.log("🔌 Attempting to connect to OpenSea WebSocket...");
 
-    // OpenSea Stream Client setup
     const client = new OpenSeaStreamClient({
-      token: 'a0ebd2016e774dcb8214cae098636155',  // Replace with your actual OpenSea API key
+      token: 'YOUR_OPENSEA_API_KEY',  // Replace with your actual OpenSea API key
       connectOptions: {
         transport: WebSocket
       }
@@ -18,24 +17,26 @@ async function initializeOpenSeaClient() {
     client.onItemSold({
       collection_slug: 'lilpudgys',  // Correct collection slug for Lil Pudgys
       event: (event) => {
-        console.log('🔍 Sale Event Payload:', JSON.stringify(event, null, 2));
-
         const { payload } = event;
+
         if (payload && payload.asset) {
-          console.log(`🎉 Lil Pudgy sold!`);
-          console.log(`Token ID: ${payload.asset.token_id}`);
-          console.log(`Sale Price: ${payload.payment_token.eth_price} ETH`);
-          console.log(`Buyer: ${payload.winner_account.address}`);
-          console.log(`Seller: ${payload.seller.address}`);
+          const salePrice = payload.payment_token ? payload.payment_token.eth_price : null;
+          
+          // Log details if the event contains a sale price
+          if (salePrice) {
+            console.log(`🎉 Lil Pudgy sold!`);
+            console.log(`Token ID: ${payload.asset.token_id}`);
+            console.log(`Sale Price: ${salePrice} ETH`);
+            console.log(`Buyer: ${payload.winner_account.address}`);
+            console.log(`Seller: ${payload.seller.address}`);
+            console.log(`Transaction Hash: ${payload.transaction.hash}`);
+          } else {
+            console.log("⚠️ Sale price not available for this event.");
+          }
         } else {
           console.log('⚠️ No asset data found in the event payload.');
         }
       }
-    });
-
-    // Listen to multiple event types (e.g., sales and transfers)
-    client.onEvents('lilpudgys', [EventType.ITEM_SOLD, EventType.ITEM_TRANSFERRED], (event) => {
-      console.log('🔍 Another Event:', JSON.stringify(event, null, 2));
     });
 
     console.log("✅ Connected to OpenSea WebSocket successfully!");
